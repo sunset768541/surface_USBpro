@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:text="Medium Text"
+    android:textSize="23sp"
+    android:textColor="@color/colorAccent"
+    android:id="@+id/textView22"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

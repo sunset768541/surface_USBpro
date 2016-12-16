@@ -1,0 +1,410 @@
+Index: achartengine/.project
+===================================================================
+--- achartengine/.project	(revision 316)
++++ achartengine/.project	(working copy)
+@@ -1,33 +1,33 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<projectDescription>
+-	<name>AChartEngine</name>
+-	<comment></comment>
+-	<projects>
+-	</projects>
+-	<buildSpec>
+-		<buildCommand>
+-			<name>com.android.ide.eclipse.adt.ResourceManagerBuilder</name>
+-			<arguments>
+-			</arguments>
+-		</buildCommand>
+-		<buildCommand>
+-			<name>com.android.ide.eclipse.adt.PreCompilerBuilder</name>
+-			<arguments>
+-			</arguments>
+-		</buildCommand>
+-		<buildCommand>
+-			<name>org.eclipse.jdt.core.javabuilder</name>
+-			<arguments>
+-			</arguments>
+-		</buildCommand>
+-		<buildCommand>
+-			<name>com.android.ide.eclipse.adt.ApkBuilder</name>
+-			<arguments>
+-			</arguments>
+-		</buildCommand>
+-	</buildSpec>
+-	<natures>
+-		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
+-		<nature>org.eclipse.jdt.core.javanature</nature>
+-	</natures>
+-</projectDescription>
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>FastAChartEngine</name>
++	<comment></comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>com.android.ide.eclipse.adt.ResourceManagerBuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>com.android.ide.eclipse.adt.PreCompilerBuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>com.android.ide.eclipse.adt.ApkBuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++	</natures>
++</projectDescription>
+Index: achartengine/src/org/achartengine/chart/XYChart.java
+===================================================================
+--- achartengine/src/org/achartengine/chart/XYChart.java	(revision 316)
++++ achartengine/src/org/achartengine/chart/XYChart.java	(working copy)
+@@ -1,12 +1,12 @@
+ /**
+  * Copyright (C) 2009, 2010 SC 4ViewSoft SRL
+- *  
++ * 
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+- *  
++ * 
+  *      http://www.apache.org/licenses/LICENSE-2.0
+- *  
++ * 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@@ -21,6 +21,8 @@
+ import java.util.LinkedList;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Map.Entry;
++import java.util.SortedMap;
+ 
+ import org.achartengine.model.Point;
+ import org.achartengine.model.SeriesSelection;
+@@ -62,7 +64,7 @@
+   /** The visible chart area, in screen coordinates. */
+   private Rect mScreenR;
+   /** The calculated range. */
+-  private Map<Integer, double[]> mCalcRange = new HashMap<Integer, double[]>();
++  private final Map<Integer, double[]> mCalcRange = new HashMap<Integer, double[]>();
+ 
+   /**
+    * The clickable areas for all points. The array index is the series index,
+@@ -101,6 +103,7 @@
+    * @param height the height of the view to draw to
+    * @param paint the paint
+    */
++  @Override
+   public void draw(Canvas canvas, int x, int y, int width, int height, Paint paint) {
+     paint.setAntiAlias(mRenderer.isAntialiasing());
+     int legendSize = getLegendSize(mRenderer, height / 5, mRenderer.getAxisTitleTextSize());
+@@ -227,26 +230,47 @@
+       if (series.getItemCount() == 0) {
+         continue;
+       }
++
+       hasValues = true;
+       SimpleSeriesRenderer seriesRenderer = mRenderer.getSeriesRendererAt(i);
++
+       int originalValuesLength = series.getItemCount();
+       int valuesLength = originalValuesLength;
+       int length = valuesLength * 2;
++
+       List<Float> points = new ArrayList<Float>();
++
+       float yAxisValue = Math.min(bottom, (float) (bottom + yPixelsPerUnit[scale] * minY[scale]));
+       LinkedList<RectF> clickableArea = new LinkedList<RectF>();
++
+       clickableAreas.put(i, clickableArea);
+-      for (int j = 0; j < length; j += 2) {
+-        int index = j / 2;
+-        double yValue = series.getY(index);
+-        if (yValue != MathHelper.NULL_VALUE) {
+-          points.add((float) (left + xPixelsPerUnit[scale] * (series.getX(index) - minX[scale])));
++
++      SortedMap<Double, Double> range = series.getRange(minX[scale], maxX[scale],1);
++
++      for (Entry<Double, Double> value : range.entrySet()) {
++
++        double xValue = value.getKey();
++        double yValue = value.getValue();
++
++        //        points.add((float) (left + xPixelsPerUnit[scale]
++        //            * (value.getKey().floatValue() - minX[scale])));
++        //        points.add((float) (bottom - yPixelsPerUnit[scale]
++        //            * (value.getValue().floatValue() - minY[scale])));
++
++        if (yValue != MathHelper.NULL_VALUE)
++        {
++          points.add((float) (left + xPixelsPerUnit[scale] * (xValue - minX[scale])));
+           points.add((float) (bottom - yPixelsPerUnit[scale] * (yValue - minY[scale])));
+-        } else if (isRenderNullValues()) {
+-          points.add((float) (left + xPixelsPerUnit[scale] * (series.getX(index) - minX[scale])));
++        }
++        else if (isRenderNullValues())
++        {
++          points.add((float) (left + xPixelsPerUnit[scale] * (xValue - minX[scale])));
+           points.add((float) (bottom - yPixelsPerUnit[scale] * (-minY[scale])));
+-        } else {
+-          if (points.size() > 0) {
++        }
++        else
++        {
++          if (points.size() > 0)
++          {
+             drawSeries(series, canvas, paint, points, seriesRenderer, yAxisValue, i, or);
+             RectF[] clickableAreasForSubSeries = clickableAreasForPoints(MathHelper
+                 .getFloats(points), yAxisValue, i);
+@@ -256,7 +280,9 @@
+           clickableArea.add(null);
+         }
+       }
+-      if (points.size() > 0) {
++
++      if (points.size() > 0)
++      {
+         drawSeries(series, canvas, paint, points, seriesRenderer, yAxisValue, i, or);
+         RectF[] clickableAreasForSubSeries = clickableAreasForPoints(MathHelper.getFloats(points),
+             yAxisValue, i);
+@@ -616,7 +642,7 @@
+     }
+     drawXTextLabels(xTextLabelLocations, canvas, paint, showLabels, left, top, bottom, xPixelsPerUnit, minX, maxX);
+   }
+-  
++
+   /**
+    * The graphical representation of the text labels on the X axis.
+    * 
+@@ -630,7 +656,7 @@
+    * @param minX the minimum value on the X axis in the chart
+    * @param maxX the maximum value on the X axis in the chart
+    */
+-  protected void drawXTextLabels(Double[] xTextLabelLocations, Canvas canvas, Paint paint, 
++  protected void drawXTextLabels(Double[] xTextLabelLocations, Canvas canvas, Paint paint,
+       boolean showLabels, int left, int top, int bottom, double xPixelsPerUnit, double minX, double maxX) {
+     boolean showCustomTextGrid = mRenderer.isShowCustomTextGrid();
+     if (showLabels) {
+@@ -699,7 +725,7 @@
+     return new double[] {
+         (screenX - mScreenR.left) * (realMaxX - realMinX) / mScreenR.width() + realMinX,
+         (mScreenR.top + mScreenR.height() - screenY) * (realMaxY - realMinY) / mScreenR.height()
+-            + realMinY };
++        + realMinY };
+   }
+ 
+   public double[] toScreenPoint(double[] realPoint, int scale) {
+@@ -765,7 +791,7 @@
+    */
+   protected abstract RectF[] clickableAreasForPoints(float[] points, float yAxisValue,
+       int seriesIndex);
+-  
++
+   /**
+    * Returns if the chart should display the null values.
+    * 
+Index: achartengine/src/org/achartengine/model/XYSeries.java
+===================================================================
+--- achartengine/src/org/achartengine/model/XYSeries.java	(revision 316)
++++ achartengine/src/org/achartengine/model/XYSeries.java	(working copy)
+@@ -1,12 +1,12 @@
+ /**
+  * Copyright (C) 2009, 2010 SC 4ViewSoft SRL
+- *  
++ * 
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+- *  
++ * 
+  *      http://www.apache.org/licenses/LICENSE-2.0
+- *  
++ * 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@@ -16,10 +16,12 @@
+ package org.achartengine.model;
+ 
+ import java.io.Serializable;
+-import java.util.ArrayList;
+-import java.util.List;
++import java.util.Collection;
++import java.util.SortedMap;
+ 
++import org.achartengine.util.IndexXYMap;
+ import org.achartengine.util.MathHelper;
++import org.achartengine.util.XYEntry;
+ 
+ /**
+  * An XY series encapsulates values for XY charts like line, time, area,
+@@ -28,10 +30,8 @@
+ public class XYSeries implements Serializable {
+   /** The series title. */
+   private String mTitle;
+-  /** A list to contain the values for the X axis. */
+-  private List<Double> mX = new ArrayList<Double>();
+-  /** A list to contain the values for the Y axis. */
+-  private List<Double> mY = new ArrayList<Double>();
++  /** A map to contain values for X and Y axes and index for each bundle */
++  private final IndexXYMap<Double, Double> mXY = new IndexXYMap<Double, Double>();
+   /** The minimum value for the X axis. */
+   private double mMinX = MathHelper.NULL_VALUE;
+   /** The maximum value for the X axis. */
+@@ -41,7 +41,7 @@
+   /** The maximum value for the Y axis. */
+   private double mMaxY = -MathHelper.NULL_VALUE;
+   /** The scale number for this series. */
+-  private int mScaleNumber;
++  private final int mScaleNumber;
+ 
+   /**
+    * Builds a new XY series.
+@@ -122,8 +122,7 @@
+    * @param y the value for the Y axis
+    */
+   public synchronized void add(double x, double y) {
+-    mX.add(x);
+-    mY.add(y);
++    mXY.put(x, y);
+     updateRange(x, y);
+   }
+ 
+@@ -133,8 +132,9 @@
+    * @param index the index in the series of the value to remove
+    */
+   public synchronized void remove(int index) {
+-    double removedX = mX.remove(index);
+-    double removedY = mY.remove(index);
++    XYEntry<Double, Double> removedEntry = mXY.removeByIndex(index);
++    double removedX = removedEntry.getKey();
++    double removedY = removedEntry.getValue();
+     if (removedX == mMinX || removedX == mMaxX || removedY == mMinY || removedY == mMaxY) {
+       initRange();
+     }
+@@ -144,8 +144,7 @@
+    * Removes all the existing values from the series.
+    */
+   public synchronized void clear() {
+-    mX.clear();
+-    mY.clear();
++    mXY.clear();
+     initRange();
+   }
+ 
+@@ -156,7 +155,7 @@
+    * @return the X value
+    */
+   public synchronized double getX(int index) {
+-    return mX.get(index);
++    return mXY.getXByIndex(index);
+   }
+ 
+   /**
+@@ -166,16 +165,49 @@
+    * @return the Y value
+    */
+   public synchronized double getY(int index) {
+-    return mY.get(index);
++    return mXY.getYByIndex(index);
+   }
+ 
+   /**
++   * Returns submap of x and y values according to the given start and end
++   * 
++   * @param start - x value
++   * @param end - x value
++   * @return
++   */
++  public synchronized SortedMap<Double, Double> getRange(double start, double end, int beforeAfterPoints) {
++    // we need to add one point before the start and one point after the end (if there are any)
++    // to ensure that line doesn't end before the end of the screen
++
++    //this would be simply: start = mXY.lowerKey(start) but NavigableMap is available since API 9
++    SortedMap<Double, Double> headMap = mXY.headMap(start);
++    if (headMap.size() != 0) {
++      start = headMap.lastKey();
++    }
++
++    // this would be simply: end = mXY.higherKey(end) but NavigableMap is available since API 9
++    // so we have to do this dirty hack
++    SortedMap<Double, Double> tailMap = mXY.tailMap(end);
++    if (tailMap.size() != 0) {
++      Collection<Double> tailCollection = tailMap.keySet();
++      if (tailMap.size() > 1) {
++        end = (Double) tailCollection.toArray()[1];
++      } else {
++        end += tailMap.firstKey();
++      }
++    }
++
++    return mXY.subMap(start, end);
++    //return mXY.subMap(start-mXY.getMaxXDifference(), end+mXY.getMaxXDifference());
++  }
++
++  /**
+    * Returns the series item count.
+    * 
+    * @return the series item count
+    */
+   public synchronized int getItemCount() {
+-    return mX.size();
++    return mXY.size();
+   }
+ 
+   /**
+Index: achartengine/src/org/achartengine/tools/Pan.java
+===================================================================
+--- achartengine/src/org/achartengine/tools/Pan.java	(revision 316)
++++ achartengine/src/org/achartengine/tools/Pan.java	(working copy)
+@@ -1,12 +1,12 @@
+ /**
+  * Copyright (C) 2009, 2010 SC 4ViewSoft SRL
+- *  
++ * 
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+- *  
++ * 
+  *      http://www.apache.org/licenses/LICENSE-2.0
+- *  
++ * 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@@ -27,7 +27,7 @@
+  */
+ public class Pan extends AbstractTool {
+   /** The pan listeners. */
+-  private List<PanListener> mPanListeners = new ArrayList<PanListener>();
++  private final List<PanListener> mPanListeners = new ArrayList<PanListener>();
+ 
+   /**
+    * Builds and instance of the pan tool.
+@@ -47,7 +47,8 @@
+    * @param newY the current location on the Y axis
+    */
+   public void apply(float oldX, float oldY, float newX, float newY) {
+-    if (mChart instanceof XYChart) {
++    if (mChart instanceof XYChart)
++    {
+       int scales = mRenderer.getScalesCount();
+       double[] limits = mRenderer.getPanLimits();
+       boolean limited = limits != null && limits.length == 4;

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.datausb">
+    <uses-permission android:name="android.permission.RECEIVE_USB_DEVICE_ATTACHED"></uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_USB_DEVICE_DETACHED"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"></uses-permission>
+    <uses-feature android:name="android.hardware.usb.host" />
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+        <activity android:name=".Main"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <service android:name=".Service1">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.ACTION_USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </service>
+        <service android:name=".Service2">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.ACTION_USB_DEVICE_DEATTACHED" />
+            </intent-filter>
+        </service>
+        <receiver android:name=".BroadCr1">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".BroadCr2">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

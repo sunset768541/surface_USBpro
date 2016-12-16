@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <SurfaceView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/surb"
+        android:layout_weight="1"
+        android:layout_margin="5dp" />
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/togglebuttoncolor"
+            android:layout_margin="7dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="光纤A当前温度"
+                android:textColor="#ff00ffff"
+                android:textStyle="normal"
+                android:id="@+id/textView13"
+                android:layout_marginRight="2dp"
+                android:layout_marginLeft="2dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText"
+                android:textColor="#ff00ffff"
+                android:hint="℃"
+                android:focusable="true" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="执行标定"
+                android:id="@+id/button8"
+                android:textColor="#ff00ffff" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="光纤B当前温度"
+                android:textColor="#ff0022"
+                android:textStyle="normal"
+                android:id="@+id/textView14"
+                android:layout_marginRight="2dp"
+                android:layout_marginLeft="2dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText2"
+                android:textColor="#ff0022"
+                android:hint="℃" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="执行标定"
+                android:id="@+id/button9"
+                android:textColor="#ff0022" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="光纤C当前温度"
+                android:id="@+id/textView48"
+                android:textColor="#ff00ff00" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:ems="10"
+                android:id="@+id/editText20"
+                android:hint="℃"
+                android:textColor="#ff00ff00" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="执行标定"
+                android:id="@+id/button4"
+                android:textColor="#ff00ff00" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="光纤D当前温度"
+                android:id="@+id/textView49"
+                android:textColor="#ffffff00" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:ems="10"
+                android:id="@+id/editText21"
+                android:hint="℃"
+                android:textColor="#ffffff00" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="执行标定"
+                android:id="@+id/button5"
+                android:textColor="#ffffff00" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- <ImageView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:id="@+id/cva"
+         android:background="@color/bla"/>-->
+</LinearLayout>

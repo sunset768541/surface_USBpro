@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:background="@drawable/ui">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="拉曼光纤温度传感显示系统"
+            android:id="@+id/textView16"
+            android:paddingTop="10dp"
+            android:textSize="20sp"
+            android:textColor="#ffffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingLeft="10dp"
+        android:layout_marginBottom="0dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@drawable/togglebuttoncolor">
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton"
+                android:background="@drawable/dmbutton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="数据模式"
+                android:id="@+id/textView25"
+                android:layout_marginBottom="5dp"
+                android:textSize="10sp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton2"
+                android:background="@drawable/clabutton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="标定模式"
+                android:id="@+id/textView26"
+                android:layout_marginBottom="5dp"
+                android:textSize="10sp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton3"
+                android:background="@drawable/tembutton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="温度模式"
+                android:id="@+id/textView27"
+                android:layout_marginBottom="5dp"
+                android:textSize="10sp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton4"
+                android:background="@drawable/thrbutton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="三维模式"
+                android:id="@+id/textView28"
+                android:layout_marginBottom="5dp"
+                android:textSize="10sp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton5"
+                android:background="@drawable/setbutton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="系统设置"
+                android:id="@+id/textView29"
+                android:layout_marginBottom="5dp"
+                android:textSize="10sp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton6"
+                android:background="@drawable/hisbutton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="查看数据"
+                android:id="@+id/textView30"
+                android:textSize="10sp"
+                android:layout_marginBottom="5dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/contineer"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="5dp"></FrameLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:paddingLeft="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/transmitespeed1"
+                android:layout_centerInParent="true"
+                android:text="采样数据"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentStart="true" />
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="开启设备"
+                android:id="@+id/toggleButton"
+                android:textOff="开始"
+                android:textOn="暂停"
+                android:background="@drawable/buttoncolor"
+                android:checked="false"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="right|top"
+                android:layout_alignParentEnd="true" />
+
+            <ToggleButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="New ToggleButton"
+                android:id="@+id/fiberA"
+                android:layout_toLeftOf="@+id/fiberB"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/fiber1ring"
+                android:textSize="12sp"
+                android:textOn="A"
+                android:textOff="A"
+                android:clickable="false"
+                android:enabled="false"
+                android:focusable="true" />
+
+            <ToggleButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="New ToggleButton"
+                android:id="@+id/fiberB"
+                android:background="@drawable/fiber2ring"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/fiberC"
+                android:textOff="B"
+                android:textOn="B"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:enabled="false"
+                android:focusable="true" />
+
+            <ToggleButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="New ToggleButton"
+                android:id="@+id/fiberC"
+                android:layout_toLeftOf="@+id/fiberD"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/fiber3ring"
+                android:textSize="12sp"
+                android:textOn="C"
+                android:textOff="C"
+                android:clickable="true"
+                android:focusable="false"
+                android:enabled="false" />
+
+            <ToggleButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="New ToggleButton"
+                android:id="@+id/fiberD"
+                android:layout_alignParentRight="false"
+                android:layout_toLeftOf="@+id/toggleButton"
+                android:background="@drawable/fiber4ring"
+                android:layout_marginRight="10dp"
+                android:textOff="D"
+                android:textOn="D"
+                android:textSize="12sp"
+                android:clickable="true"
+                android:focusable="false"
+                android:enabled="false" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
