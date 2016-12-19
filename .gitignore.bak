@@ -3,7 +3,8 @@
 /.idea
 /workspace.xml
 /build
-/libraries
+libraries
 
+/gradle
 
 
