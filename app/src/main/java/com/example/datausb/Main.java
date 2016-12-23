@@ -12,12 +12,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.example.datausb.DataUtil.DataBaseOperation;
 import com.example.datausb.DataUtil.DataWR;
 import com.example.datausb.Fiber.FiberManager;
@@ -47,6 +49,7 @@ public class Main extends Activity {
     SystemSetting systemSetting = new SystemSetting();
     ThreeDimensionModel threeDimensionModel = new ThreeDimensionModel();
     HistoryRecord historyRecord = new HistoryRecord();
+    MapModel mapModel=new MapModel();
     ToggleButton tunnelA;
     ToggleButton tunnelB;
     ToggleButton tunnelC;
@@ -75,6 +78,8 @@ public class Main extends Activity {
     private  UsbControl usbControl;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SDKInitializer.initialize(getApplicationContext());
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -104,6 +109,8 @@ public class Main extends Activity {
         changeToThreeDimensionModelButton.setOnClickListener(new ChangeTThdim());
         ImageButton historyRecordingButton = (ImageButton) findViewById(R.id.imageButton6);
         historyRecordingButton.setOnClickListener(new HistoryRecordListener());
+        Button mapmodel =(Button)findViewById(R.id.mapmodel);
+        mapmodel.setOnClickListener(new MapModelListener());
         /**
          *
          */
@@ -310,7 +317,16 @@ public class Main extends Activity {
             transaction.commit();
         }
     }
-
+    /**
+     * MapModel按键监听类
+     */
+    class MapModelListener implements View.OnClickListener{
+        public void onClick(View v){
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.contineer, mapModel, "mapmodel");
+            transaction.commit();
+        }
+    }
     /**
      * 打开设备的togglebutton监听函数
      */

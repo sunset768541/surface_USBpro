@@ -56,7 +56,11 @@
                 android:id="@+id/textView25"
                 android:layout_marginBottom="5dp"
                 android:textSize="10sp" />
-
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mapmodel"
+                android:text="地图模式"/>
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

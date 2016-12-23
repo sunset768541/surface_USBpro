@@ -259,5 +259,4 @@ import java.util.Arrays;
         pre1663Data=new int[getFiberLength()];
         pre1440Data=new int[getFiberLength()];
     }
-//git test
 }
