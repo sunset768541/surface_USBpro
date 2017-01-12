@@ -146,13 +146,16 @@ public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDraw
         float[] x = new float[4096];
         Random r=new Random();
         for (int i = 0; i < 4095; i++) {
-            x[i]=r.nextInt(70);
+            if (i>2040&&i<2048){
+                    x[i]=90;
+            }else
+            x[i]=r.nextInt(20)+20;
         }
         return x;
     }
     public float[] colorProcess(float[] data) {
         float min=0;
-        float max=80;
+        float max=100;
         float split=max/4;
         float[] color = new float[data.length * 4];//用于存储生成的颜色值
         int j = 0;

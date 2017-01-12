@@ -109,7 +109,7 @@ public class Main extends Activity {
         changeToThreeDimensionModelButton.setOnClickListener(new ChangeTThdim());
         ImageButton historyRecordingButton = (ImageButton) findViewById(R.id.imageButton6);
         historyRecordingButton.setOnClickListener(new HistoryRecordListener());
-        Button mapmodel =(Button)findViewById(R.id.mapmodel);
+        ImageButton mapmodel =(ImageButton)findViewById(R.id.mapmodel);
         mapmodel.setOnClickListener(new MapModelListener());
         /**
          *

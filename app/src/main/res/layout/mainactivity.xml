@@ -56,11 +56,22 @@
                 android:id="@+id/textView25"
                 android:layout_marginBottom="5dp"
                 android:textSize="10sp" />
-            <Button
+
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/mapmodel"
-                android:text="地图模式"/>
+                android:background="@drawable/mapbuttn" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="地图模式"
+                android:id="@+id/textView55"
+                android:layout_marginBottom="5dp"
+                android:textSize="10sp" />
+
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
