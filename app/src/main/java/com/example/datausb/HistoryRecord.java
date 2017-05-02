@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,11 +28,16 @@ public class HistoryRecord extends android.app.Fragment {
     private Spinner spinner3;
     private ListView listView;
     private HistoryThreeDimensionModel showdata;
+    private HistoryTempretureModel historyTempretureModel;
     ArrayAdapter<String> adapter;
     String yea;
     String mon;
     String da;
     String[] datalist;
+    FiberManager fiberManager;
+    public void setFiberManager(FiberManager fiberManager){
+        this.fiberManager=fiberManager;
+    }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.historyrecord, container, false);
     }
@@ -39,11 +45,13 @@ public class HistoryRecord extends android.app.Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         showdata = new HistoryThreeDimensionModel();
+        historyTempretureModel=new HistoryTempretureModel();
         listView = (ListView) getActivity().findViewById(R.id.listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                 Log.e("点击了", datalist[position]);
+                                                fiberManager.pushState();//每当读取一个文件之前都要把当前Fiber的长度和标定温度保护起来，一遍结束读取后恢复。
                                                 String readFileName = DataWR.SDcardPath + yea + "/" + mon + "/" + da + "/" + datalist[position];
                                                 Log.e("D", readFileName);
                                                 try {
@@ -51,8 +59,8 @@ public class HistoryRecord extends android.app.Fragment {
                                                     while (DataRD.SHOW_DATA_THREAT_FLAG) {
                                                         Log.e("show线程执行中", "");
                                                     }
-                                                    if (DataRD.iniReadDataFile(readFileName,getActivity()))
-                                                        showdata.threadstart();
+                                                    if (DataRD.iniReadDataFile(readFileName,getActivity()))//根据文件名初始化DataRD,传入的FiberManager用于保护现场
+                                                        showdata.threadstart();//开始HistoryThreeDimensionModel的数据读取线程，读取数据
                                                     else
                                                         Toast.makeText(getActivity().getApplication(), "读取数据文件损坏", Toast.LENGTH_SHORT).show();
 
@@ -138,10 +146,16 @@ public class HistoryRecord extends android.app.Fragment {
             }
         });
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.showdataframe, showdata, "showdata");//datamodel为fragment的tag值，用来在数据处理线程中找到当前的fragment
+     //   if(true) {
+            transaction.replace(R.id.showdataframe, showdata, "showdata");//datamodel为fragment的tag值，用来在数据处理线程中找到当前的fragment
+       // }
+        //else transaction.replace(R.id.showdataframe, historyTempretureModel, "historyTempretureModel");//利用温度模还原历史数据
         transaction.commit();
-
     }
 
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        fiberManager.popState();//在Fragement销毁前将各个Fiber的标定温度和光纤长度恢复
+    }
 }

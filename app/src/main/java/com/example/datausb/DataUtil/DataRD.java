@@ -18,6 +18,8 @@ import java.util.Arrays;
 
 /**
  * Created by sunset on 16/5/30.
+ * 读取存储的数据，包括读取数据文件的头文件，读取数据文件中的数据
+ *
  */
 public class DataRD {
     public static RandomAccessFile dataInput;//read(byte[] b,off,dataLength)其中,表示把所有数据读到b中，off为数据在b中放置的起始位置;
@@ -40,7 +42,6 @@ public class DataRD {
     public static boolean SHOW_DATA_THREAT_FLAG = false;//3维显示数据线程开始显示一组数据的开始和结束标志位
     public static FiberManager fiberManager = new FiberManager();
     private static Context context;
-
     public static boolean iniReadDataFile(String filepath, Activity activity) throws Exception {//初始化读取数据
         context = activity.getApplicationContext();
         boolean isIni = true;
@@ -122,7 +123,7 @@ public class DataRD {
         int[] dd = bytes2Int(dataBuffer);
 
        // Log.e("组合数据","ok");
-        fiberManager.decodeData(dd);
+        fiberManager.decodeData(dd);//在getFileParameter设置了各个光纤的参数
     }
 
     public static void getFileParameter(RandomAccessFile randomAccessFile) throws Exception {//获取的参数有每个通道的数据长度，光纤的条数,文件的创建时间，光纤的标定温度，文件结束的时间

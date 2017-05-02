@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.datausb.R;
+import com.example.datausb.ThreeDimensionModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,16 +39,17 @@ public class MySurfaceView extends GLSurfaceView
     float x;
     float y;
     float Offset=20;
-	public SceneRenderer mRender;
+	public SceneRenderer mRenderer;
 	float preX;
 	float preY;
 
 	public MySurfaceView(Context context)
 	{
 		super(context);
+
 		this.setEGLContextClientVersion(2); //设置使用OPENGL ES2.0
-        mRender = new SceneRenderer();	//创建场景渲染器
-		setRenderer(mRender);				//设置渲染器
+        mRenderer = new SceneRenderer();	//创建场景渲染器
+		setRenderer(mRenderer);				//设置渲染器
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);//设置渲染模式为主动渲染
 		//WIDTH=showLineSurfaceViewWidth;
 		//HEIGHT=showLineViewHeigth;
@@ -147,7 +149,6 @@ public class MySurfaceView extends GLSurfaceView
             MatrixState.pushMatrix();
             mountion.drawSelf(mountionId, rockId);
             MatrixState.popMatrix();
-            
             MatrixState.pushMatrix();
             MatrixState.translate(0, -2, 0);
             sky.drawSelf(skyId);

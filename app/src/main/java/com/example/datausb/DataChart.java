@@ -208,26 +208,17 @@ public class DataChart {
 
     }
     private void drawPath(Canvas canvas, List<float[]> data, boolean circular,List<Paint> dataPaint,float []margins) {
-
         if (data.size()<1){
             return;
         }
-
         setxPixelsPerUnit(canvas,margins);
         setyPixelsPerUnit(canvas,margins);
         canvas.translate(margins[0],canvas.getHeight()-margins[2]);
         for (int datalength=0;datalength<data.size();datalength++){
             Path path = new Path();
-
-//            Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);//开启抗锯齿使得图线变细
-//            paint.setStyle(Paint.Style.STROKE);
-//            paint.setColor(dataColors[datalength]);
-//            paint.setStrokeWidth(1f);
-
             //取出指定长度的数据进行绘制
             int start=(int)getxMin();
             int end=(int)getxMax();
-
             if (start<0){
                 start=0;
             }
@@ -237,14 +228,10 @@ public class DataChart {
             if (end>data.get(datalength).length){
                 end=data.get(datalength).length;
             }
-
             else if (end<0){
                 end=0;
             }
-           // Log.e("start",Integer.valueOf(start).toString());
-            //Log.e("end",Integer.valueOf(end).toString());
             float [] sclaedata=Arrays.copyOfRange(data.get(datalength),start,end);
-            //Log.e("sclaedatat",Integer.valueOf(sclaedata.length).toString());
             float[]points=adapterArray(sclaedata,getxMin(),getyMin());
             float[] tempDrawPoints;
             if (points.length < 4) {
@@ -255,10 +242,6 @@ public class DataChart {
             path.lineTo(tempDrawPoints[2], tempDrawPoints[3]);
             int length = points.length;
             for (int i = 4; i < length; i += 2) {
-//                if ((-points[i - 1] < 0 && -points[i + 1] < 0)
-//                        || (-points[i - 1] > canvas.getHeight()-margins[3] && -points[i + 1] > canvas.getHeight()-margins[3])) {
-//                    continue;
-//                }
                 if (!circular) {
                     path.moveTo(points[i - 2], points[i - 1]);
                 }
@@ -266,12 +249,8 @@ public class DataChart {
             }
             if (circular) {
                 path.lineTo(points[0], points[1]);
-
             }
-
             canvas.drawPath(path, dataPaint.get(datalength));
-
-
         }
     }
 

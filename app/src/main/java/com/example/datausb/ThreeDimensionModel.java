@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.example.datausb.Fiber.Fiber;
 import com.example.datausb.Fiber.FiberA;
 import com.example.datausb.ThreeDimUtil.MySurfaceView;
+import com.example.datausb.ThreeDimUtil.MyThreeDimSurfaceView;
+import com.example.datausb.ThreeDimUtil.ThreeDimObjectCatch;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -21,9 +23,10 @@ import java.util.Map;
  */
 public class ThreeDimensionModel extends android.app.Fragment {
     public MySurfaceView mv;
+
     public static float WIDTH;
     public static float HEIGHT;
-
+    public MyThreeDimSurfaceView mt;
 
     public void wakeup() {
         ((Main) getActivity()).dataObj.notifyAll();
@@ -32,6 +35,7 @@ public class ThreeDimensionModel extends android.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FrameLayout ff = (FrameLayout) ( getActivity().findViewById(R.id.contineer));
+
         float x = ff.getWidth();
         float y = ff.getHeight();
         if (x > y) {
@@ -41,11 +45,20 @@ public class ThreeDimensionModel extends android.app.Fragment {
             WIDTH = y;
             HEIGHT = x;
         }
-        mv = new MySurfaceView(getActivity());
-        mv.requestFocus();//获取焦点
-        mv.setFocusableInTouchMode(true);//设置为可触控
 
+        if (SystemParameter.envPath!=null&& SystemParameter.fiberPath!=null){
+            ((Main) getActivity()).loadmodestate.setText("载入模型中...");
+            mt=new MyThreeDimSurfaceView(getActivity(),this);
+            mt.requestFocus();
+            mt.setFocusableInTouchMode(true);
 
+        }else {
+            mv = new MySurfaceView(getActivity());
+            mv.requestFocus();//获取焦点
+            mv.setFocusableInTouchMode(true);//设置为可触控
+
+        }
+        Log.e("onCreat", "ok");
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,10 +68,13 @@ public class ThreeDimensionModel extends android.app.Fragment {
             }
         } catch (Exception e) {
             Toast.makeText(getActivity().getApplicationContext(), "标定数据不存在，请先在标定模式下进行标定", Toast.LENGTH_SHORT).show();
+        }
+        Log.e("onCreatView", "ok");
+        if (SystemParameter.envPath!=null&& SystemParameter.fiberPath!=null){
 
+            return mt;
         }
 
-        // Log.e("onCreat", Integer.valueOf(mv.getcont()).toString());
         return mv;
     }
 
@@ -67,11 +83,13 @@ public class ThreeDimensionModel extends android.app.Fragment {
         boolean datareceive = ((Main) getActivity()).getByteDataProcessComlete();
         RenderThread myThread = new RenderThread(datareceive);//创建一个绘图线程
         myThread.start();
+        Log.e("onActivityCreated", "ok");
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.e("onResume", "ok");
     }
 
     @Override
@@ -97,12 +115,12 @@ public class ThreeDimensionModel extends android.app.Fragment {
                 /**
                 测试光纤的颜色
                  **/
-//                float[] colors = new float[mv.mRender.getcont()];//创建用于给光纤模型颜色渲染的数据
+//                float[] colors = new float[mv.mRenderer.getcont()];//创建用于给光纤模型颜色渲染的数据
 //                float[] cc = colorProcess(testColor());
 //
 //                colors = Arrays.copyOfRange(cc, 0, colors.length);
 //
-//                mv.mRender.setcolor(colors);
+//                mv.mRenderer.setcolor(colors);
             } catch (InterruptedException e) {
                 Log.e("三维模式",Log.getStackTraceString(e));
             }
@@ -125,7 +143,12 @@ public class ThreeDimensionModel extends android.app.Fragment {
                             ((Main) getActivity()).dataObj.notifyAll();
                         }
                         float[] cc = colorProcess(FiberA.createFiberA().calculateTempreture());
-                        mv.mRender.setcolor(cc);
+                        if (mt!=null){//若设置了三维场景
+                            mt.mRenderer.setcolor(cc);
+                        }
+                        else {
+                            mv.mRenderer.setcolor(cc);
+                        }
                         ((Main) getActivity()).dataObj.flag1 = false;
                         ((Main) getActivity()).wakeUpAllMainThread();
 
