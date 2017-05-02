@@ -8,8 +8,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.datausb.DataUtil.DataBaseOperation;
+import com.example.datausb.SystemParameter;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by sunset on 16/7/28.
@@ -29,6 +33,8 @@ import java.util.Arrays;
     protected int fiberColor;
     private PathEffect line1440Effect = new DashPathEffect(new float[] {0.1f, 0.1f}, 0.0f);
     public float[] caliPSA;
+    public float[] proCaliPSA;
+    public int  proLength;
     protected Paint line1440;
     protected Paint line1663;
     protected Paint calibrate;
@@ -223,7 +229,15 @@ import java.util.Arrays;
         }
         return calculateTempreture_tem;
     }
-
+    public abstract  Map alterTem();
+    public  void pushClaLength(){//因为在读取历史数据的时候会将从文件中取得的Fiber长度和对应标定温度设置到当前的Fiber上，所以在读取文件之前要对当前的Fiber的现场进行保护
+        proCaliPSA=caliPSA;
+        proLength=length;
+    }
+    public void popClaLegnth(){//在完成读取一个文件的时候就需要将已经保护的数据光纤长度和标定温度还原回保护前的状态
+        caliPSA=proCaliPSA;
+        setFiberLength(proLength);
+    }
     public Context getContext() {
         return context;
     }

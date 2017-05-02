@@ -12,8 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,12 +35,14 @@ public class Main extends Activity {
      * 屏幕下方显示相关信息的部分
      */
     private TextView transmmitSpeedTextView;
+    public  TextView loadmodestate;
     /**
      * 实例化3个用于显示不同界面的Fragment
      * da为数据显示界面
      * calibrateModel为数据标定界面
      * tempreatureModel为温度和距离的显示界面
      */
+    FiberManager fiberManager=new FiberManager();
     DataModel dataModel = new DataModel();
     CalibrateModel calibrateModel = new CalibrateModel();
     TempreatureModel tempreatureModel = new TempreatureModel();
@@ -54,8 +54,8 @@ public class Main extends Activity {
     ToggleButton tunnelB;
     ToggleButton tunnelC;
     ToggleButton tunnelD;
-    FiberManager fiberManager=new FiberManager();
 
+    boolean threedimhide=false;
     /**
      * 定义静态变量TOGGLE_BUTTON，用来标识togglebutton是否是第一次按下，0表示没有按过togglebutton，当按下togglebutton后该值永远为1.
      * 在切换显示模式时，由于会使数据接收线程和处理线程自动启动，那打开关闭设备按键的状态也要切换到正确的状态。
@@ -68,11 +68,10 @@ public class Main extends Activity {
      * preferences为读取参数的SharePreference的实例
      * editor为修改参数的Shareferecxes.Editor的实例
      */
-    SharedPreferences fiberLengthSharePre;
-    SharedPreferences.Editor fiberLengthSharePreEdi;
+    public SharedPreferences systemSettingSharePre;
+    public SharedPreferences.Editor systemSettingSharePreEdi;
     int fiberLength;
     int fragmentnumber;
-    private EditText fiberLengthEdiText;
     ToggleButton startOrStopToggleButton;
     private  boolean UsbIsInitialize=false;
     private  UsbControl usbControl;
@@ -87,6 +86,7 @@ public class Main extends Activity {
         usbControl=UsbControl.create(this);
         UsbIsInitialize=usbControl.initializeUsb();
         DataBaseOperation.getDataBase(this);
+
         /**
          * 实例化6个按钮用来切换不同的Fragment
          * datamodle用来切换到数据显示模式
@@ -94,9 +94,10 @@ public class Main extends Activity {
          * temperature用来切换到温度距离显示模式
          * 并为按钮添加监听函数
          */
+        loadmodestate=(TextView)findViewById(R.id.loadmoedlstate);
         ImageButton changeToDataModelButton = (ImageButton) findViewById(R.id.imageButton);
 
-        changeToDataModelButton.setOnClickListener(new ChnageTDML());
+        changeToDataModelButton.setOnClickListener(new ChangeTDML());
         ImageButton changeToCalibrateModelButton = (ImageButton) findViewById(R.id.imageButton2);
         changeToCalibrateModelButton.setOnClickListener(new ChangeTCla());
         ImageButton changeToTemperatureModelButton = (ImageButton) findViewById(R.id.imageButton3);
@@ -118,17 +119,23 @@ public class Main extends Activity {
         startOrStopToggleButton.setOnClickListener(new StartOrStopListener(startOrStopToggleButton));
         //fiberLengthEdiText = (EditText) findViewById(R.id.editText5);
         transmmitSpeedTextView = (TextView) findViewById(R.id.transmitespeed1);
-        fiberLengthSharePre = getSharedPreferences("opl", MODE_PRIVATE);
-        fiberLengthSharePreEdi = fiberLengthSharePre.edit();
-        int oplong = fiberLengthSharePre.getInt("fiberlength", 0);
-
-
+        systemSettingSharePre = getSharedPreferences("systemSetting", MODE_PRIVATE);//systemSetting为用来保存参数的文件，当这个文件不存下时，通过获取edit就会创建一个名字为systemSetting的shareP
+        systemSettingSharePreEdi = systemSettingSharePre.edit();
+        iniSystemSetting();
         tunnelA=(ToggleButton)findViewById(R.id.fiberA);
         tunnelB=(ToggleButton)findViewById(R.id.fiberB);
         tunnelC=(ToggleButton)findViewById(R.id.fiberC);
         tunnelD=(ToggleButton)findViewById(R.id.fiberD);
         fiberManager.setContext(getApplicationContext());
+        historyRecord.setFiberManager(fiberManager);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveSystemSetting();
+    }
+
     public void setTunnelAOn(){
         tunnelA.setChecked(true);
     }
@@ -159,7 +166,7 @@ public class Main extends Activity {
      * 更新UI数据
      */
     private final int COMPLETED = 0;
-    private  Handler handler = new Handler() {//多线程中用于UI的更新
+    public   Handler handler = new Handler() {//多线程中用于UI的更新
         @Override
         public void handleMessage(Message msg1) {
             if (msg1.what == COMPLETED) {
@@ -168,6 +175,9 @@ public class Main extends Activity {
                 } catch (NullPointerException e) {
                     Log.e("Main",Log.getStackTraceString(e));
                 }
+            }
+            if (msg1.arg1==1){
+                loadmodestate.setText("");
             }
         }
     };
@@ -219,50 +229,71 @@ public class Main extends Activity {
         stopThreeDimenModelThread = isStop;
         return isStop;
     }
+    boolean stopMapModelThread=false;
+    public boolean setMapModelThread(boolean isStop){
+        stopMapModelThread=isStop;
+        return stopMapModelThread;
+    }
     /** *****************************************************************************************
      * 此处下面是各个控制按键的监听函数
      * *****************************************************************************************/
     /**
      * 按钮datamodle的监听函数
      * 每个FragmentTransanction的commit只能提交一次，所以我们在按下每个按钮时从新实例化一个FragmentTransanction进行提交操作
+     *         systemSettingSharePreEdi = systemSettingSharePre.edit();
+     if (currentFragment != targetFragment) {
+     if (!targetFragment.isAdded()) {
+     ft.hide(currentFragment).add(
+     id.my_frame, targetFragment);
+     } else {
+     ft.hide(currentFragment).show(targetFragment);
+     }
+     } else {
+     if (!targetFragment.isAdded()) {
+     ft.add(id.my_frame, targetFragment)
+     .show(targetFragment);
+     }
+     }
      */
-    class ChnageTDML extends ButtonClickListener{
-        public   void preThreadPrecess(){
+
+    class ChangeTDML extends ButtonClickListener{
+        public   void preThreadProcess(FragmentTransaction transaction){
             setStopCalibrateModelThread(true);
             setStopTemperatureModelThread(true);
+            setMapModelThread(true);
             setStopThreeDimenModelThread(true);
         }
         public   void fragmentTransaction(FragmentTransaction transaction){
             transaction.replace(R.id.contineer, dataModel, "datamodel");//datamodel为fragment的tag值，用来在数据处理线程中找到当前的fragment
-
         }
-        public   void afterThreadPrecess(){
+        public   void afterThreadProcess(){
             setStopDataModelThread(false);
         }
-        public   void setFragmentnumber(){
+        public   void setFragmentNumber(){
             fragmentnumber = 0;
         }
     }
     class ChangeTCla extends ButtonClickListener{
-        public   void preThreadPrecess(){
+        public   void preThreadProcess(FragmentTransaction transaction){
             setStopDataModelThread(true);
+            setMapModelThread(true);
             setStopTemperatureModelThread(true);
             setStopThreeDimenModelThread(true);
         }
         public   void fragmentTransaction(FragmentTransaction transaction){
             transaction.replace(R.id.contineer, calibrateModel, "calibratemodel");
-
         }
-        public   void afterThreadPrecess(){
+        public   void afterThreadProcess(){
             setStopCalibrateModelThread(false);
         }
-        public   void setFragmentnumber(){
+        public   void setFragmentNumber(){
             fragmentnumber = 1;
         }
     }
     class ChangeTem extends ButtonClickListener{
-        public   void preThreadPrecess(){
+        public   void preThreadProcess(FragmentTransaction transaction){
             setStopCalibrateModelThread(true);
+            setMapModelThread(true);
             setStopDataModelThread(true);
             setStopThreeDimenModelThread(true);
         }
@@ -270,26 +301,29 @@ public class Main extends Activity {
             transaction.replace(R.id.contineer, tempreatureModel, "tempreturemodel");
 
         }
-        public   void afterThreadPrecess(){
+        public   void afterThreadProcess(){
             setStopTemperatureModelThread(false);
         }
-        public   void setFragmentnumber(){
+        public   void setFragmentNumber(){
             fragmentnumber = 2;
         }
     }
     class ChangeTThdim extends ButtonClickListener{
-        public   void preThreadPrecess(){
+        public   void preThreadProcess(FragmentTransaction fragmentTransaction){
             setStopCalibrateModelThread(true);
+            setMapModelThread(true);
             setStopDataModelThread(true);
             setStopTemperatureModelThread(true);
         }
         public   void fragmentTransaction(FragmentTransaction transaction){
-            transaction.replace(R.id.contineer, threeDimensionModel, "threedimmodel");
+
+                 transaction.replace(R.id.contineer, threeDimensionModel, "threedimmodel");//利用replace显示fragement每次都会重新调用fragment的各个生命周期，降低效率
+        //    }
         }
-        public   void afterThreadPrecess(){
+        public   void afterThreadProcess(){
             setStopThreeDimenModelThread(false);
         }
-        public   void setFragmentnumber(){
+        public   void setFragmentNumber(){
             fragmentnumber =4;
         }
     }
@@ -320,11 +354,23 @@ public class Main extends Activity {
     /**
      * MapModel按键监听类
      */
-    class MapModelListener implements View.OnClickListener{
-        public void onClick(View v){
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.contineer, mapModel, "mapmodel");
-            transaction.commit();
+    class MapModelListener extends ButtonClickListener{
+        public   void preThreadProcess(FragmentTransaction fragmentTransaction){
+            setStopCalibrateModelThread(true);
+            setStopThreeDimenModelThread(true);
+            setStopDataModelThread(true);
+            setStopTemperatureModelThread(true);
+        }
+        public   void fragmentTransaction(FragmentTransaction transaction){
+
+            transaction.replace(R.id.contineer, mapModel, "mapmodel");//利用replace显示fragement每次都会重新调用fragment的各个生命周期，降低效率
+
+        }
+        public   void afterThreadProcess(){
+            setMapModelThread(false);
+        }
+        public   void setFragmentNumber(){
+            fragmentnumber =5;
         }
     }
     /**
@@ -371,9 +417,66 @@ public class Main extends Activity {
      * 设置光纤长度参数的方法
      */
     public boolean setFiberLength(int opl) {
-        fiberLengthSharePreEdi.putInt("fiberlength", opl);
-        fiberLengthSharePreEdi.commit();
+        systemSettingSharePreEdi.putInt("fiberlength", opl);
+        systemSettingSharePreEdi.commit();
         return true;
+    }
+    public void iniSystemSetting(){
+        if(systemSettingSharePre.getBoolean("hasSave",true)){
+            systemSettingSharePreEdi.putBoolean("hasSave",false);
+            systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERA",60);
+            systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERB",60);
+            systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERC",60);
+            systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERD",60);
+            systemSettingSharePreEdi.putFloat("centerLongitude",121.89835090371952f);
+            systemSettingSharePreEdi.putFloat("centerLatitude",38.978000183472237f);
+            systemSettingSharePreEdi.putString("axipath",null);
+            systemSettingSharePreEdi.putString("envPath",null);
+            systemSettingSharePreEdi.putString("fiberPath",null);
+            systemSettingSharePreEdi.putString("preenvPath",null);
+            systemSettingSharePreEdi.putString("prefiberPath",null);
+            systemSettingSharePreEdi.putInt("average",128);
+            systemSettingSharePreEdi.putInt("fiberL",256);
+            systemSettingSharePreEdi.putInt("dev",8);
+            systemSettingSharePreEdi.putInt("pla",3);
+            systemSettingSharePreEdi.commit();
+        }
+        else {
+            SystemParameter.TEM_ALERT_FIBERA=systemSettingSharePre.getInt("TEM_ALERT_FIBERA",60);
+            SystemParameter.TEM_ALERT_FIBERB=systemSettingSharePre.getInt("TEM_ALERT_FIBERB",60);
+            SystemParameter.TEM_ALERT_FIBERC=systemSettingSharePre.getInt("TEM_ALERT_FIBERC",60);
+            SystemParameter.TEM_ALERT_FIBERD=systemSettingSharePre.getInt("TEM_ALERT_FIBERD",60);
+            SystemParameter.centerLatitude=systemSettingSharePre.getFloat("centerLatitude",38.978000183472237f);
+            SystemParameter.centerLongitude=systemSettingSharePre.getFloat("centerLongitude",121.89835090371952f);
+            SystemParameter.axipath=systemSettingSharePre.getString("axipath",null);
+            SystemParameter.envPath=systemSettingSharePre.getString("envPath",null);
+            SystemParameter.fiberPath=systemSettingSharePre.getString("fiberPath",null);
+            SystemParameter.preenvPath=systemSettingSharePre.getString("preenvPath",null);
+            SystemParameter.prefiberPath=systemSettingSharePre.getString("prefiberPath",null);
+            SystemParameter.average=(char)systemSettingSharePre.getInt("average",128);
+            SystemParameter.fiberL=(char)systemSettingSharePre.getInt("fiberL",256);
+            SystemParameter.dev=(byte)systemSettingSharePre.getInt("dev",8);
+            SystemParameter.pla=(byte)systemSettingSharePre.getInt("pla",3);
+        }
+    }
+    public void saveSystemSetting(){
+        systemSettingSharePreEdi.putBoolean("hasSave",false);
+        systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERA",SystemParameter.TEM_ALERT_FIBERA);
+        systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERB",SystemParameter.TEM_ALERT_FIBERB);
+        systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERC",SystemParameter.TEM_ALERT_FIBERC);
+        systemSettingSharePreEdi.putInt("TEM_ALERT_FIBERD",SystemParameter.TEM_ALERT_FIBERD);
+        systemSettingSharePreEdi.putFloat("centerLongitude",SystemParameter.centerLongitude);
+        systemSettingSharePreEdi.putFloat("centerLatitude",SystemParameter.centerLatitude);
+        systemSettingSharePreEdi.putString("axipath",SystemParameter.axipath);
+        systemSettingSharePreEdi.putString("envPath",SystemParameter.envPath);
+        systemSettingSharePreEdi.putString("fiberPath",SystemParameter.fiberPath);
+        systemSettingSharePreEdi.putString("preenvPath",SystemParameter.preenvPath);
+        systemSettingSharePreEdi.putString("prefiberPath",SystemParameter.prefiberPath);
+        systemSettingSharePreEdi.putInt("average",SystemParameter.average);
+        systemSettingSharePreEdi.putInt("fiberL",SystemParameter.fiberL);
+        systemSettingSharePreEdi.putInt("dev",SystemParameter.dev);
+        systemSettingSharePreEdi.putInt("pla",SystemParameter.pla);
+        systemSettingSharePreEdi.commit();
     }
 
     /*******************************************************************************************
@@ -382,14 +485,11 @@ public class Main extends Activity {
     public class DataReceiveThread extends Thread {//接收数据的线程
         private boolean suspend = false;
         final Resource r;
-
         DataReceiveThread(Resource r) {
             this.r = r;
         }
-
         private final String control = ""; // 只是需要一个对象而已，这个对象没有实际意义
-
-        public void setSuspend(boolean suspend) {
+         void setSuspend(boolean suspend) {
             if (!suspend) {
                 synchronized (control) {
                     control.notifyAll();
@@ -397,39 +497,29 @@ public class Main extends Activity {
             }
             this.suspend = suspend;
         }
-
         public boolean isSuspend() {
             return this.suspend;
         }
-
         public void run() {
-
             while (true) {
-
                 synchronized (control) {
                     if (suspend) {
                         try {
                             control.wait();
-
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
                 }
-
                 synchronized (r) {
-
                     if (r.flag) {
-
-
                         try {
                             r.wait();
-
                         } catch (InterruptedException ex) {
                             Log.e("Main",Log.getStackTraceString(ex));
                         }
                     }
-                    byte[] Receivebytes = usbControl.receivceDataFromUsb(4*fiberManager.getFibeNumber()*FiberManager.fiberLength);//接收的数据每个通道2根光纤，每个光纤每米2byte
+                    byte[] Receivebytes = usbControl.receiveDataFromUsb(4*fiberManager.getFibeNumber()*FiberManager.fiberLength);
                     if (STOREDATA == 1) {
                         try {
                             DataWR.saveData(Receivebytes,fiberManager);//将接收到的数据直接存储为2进制文件
@@ -437,12 +527,11 @@ public class Main extends Activity {
                             Log.e("Main",Log.getStackTraceString(e));
                         }
                     }
-                    r.data = Receivebytes;//拼接好的数据传递出去
+                    r.data = Receivebytes;//
                     r.flag = true;
                     r.notify();
-                    // Log.d("接收", "数据接收线程完成");
                 }
-            }
+        }
 
         }
     }
@@ -503,33 +592,25 @@ public class Main extends Activity {
                     int i1 = 0;
                     int[] combination = new int[r.data.length / 2];//combination用于储存合并后的16bit数据
                     for (int i = 0; i < r.data.length; i = i + 2) {//数据组合
-
                         if (r.data[i] < 0) {
                             p = 256 + r.data[i];
-
                         } else {
                             p = r.data[i];
                         }
-
                         if (r.data[i + 1] < 0) {
                             p1 = (256 + r.data[i + 1]) << 8;
-
                         } else {
                             p1 = r.data[i + 1] << 8;
                         }
                         combination[i1] = p + p1;
-                      //  Log.e("COM",Integer.valueOf(p+p1).toString());
                         i1 = i1 + 1;
                     }
                    fiberManager.decodeData(combination);//每次整合完都把数据送到FiberManager中进行解析，将数据分配到特定的光纤中
-                    if (TEM_ALERT == 1) {
-                        if (TempreatureAlarm.alertfinish == 1) {
-                            TempreatureAlarm.alertfinish = 0;
-                            //TempreatureAlarm.tua1 = tunnelAdata;
-                            //TempreatureAlarm.tua2 = tunnelA1data;
-                            //TempreatureAlarm.tub1 = tunnelBdata;
-                            //TempreatureAlarm.tub2 = tunnelB1data;
-                            TempreatureAlarm.gettempalert();
+                    if (TEM_ALERT == 1) {//当条件成立的时候执行温度报警功能
+                        TempreatureAlarm.fiberManager=fiberManager;
+                        if (TempreatureAlarm.alertFinish == 1) {
+                            TempreatureAlarm.alertFinish = 0;
+                            TempreatureAlarm.getTempAlert();
                         }
                     }
                     /***
@@ -537,9 +618,7 @@ public class Main extends Activity {
                      */
                     synchronized (dd) {
                         try {
-
                             dd.flag1 = true;//与fragment中的绘图线程进行生产者与消费者
-
                             switch (fragmentnumber) {
                                 case 0:
                                     DataModel frgment1 = (DataModel) getFragmentManager().findFragmentByTag("datamodel");//获取当前的fragment
@@ -558,7 +637,6 @@ public class Main extends Activity {
                                     fragment4.wakeup();//调用fragment中的唤醒方法
                                     break;
                             }
-
                             /**
                              * 先实现数据处理线程的等待，直到该fragment中显示线程显示数据完成后由显示线程对当前的数据处理线程进行唤醒继续运行
                              */
@@ -571,7 +649,6 @@ public class Main extends Activity {
                             } else {
                                 dd.notifyAll();
                             }
-
                         } catch (NullPointerException ee) {
                             Log.e("Main",Log.getStackTraceString(ee));
                         }
@@ -585,7 +662,6 @@ public class Main extends Activity {
                     r.flag = false;
                     r.notify();
                     setByteDataProcessComplete(true);
-
                     // Log.d("数据处理", "数据处理线程完成");
                 }
             }
@@ -648,26 +724,22 @@ public class Main extends Activity {
             if (TOGGLE_BUTTON == 1) {
                 startOrStopToggleButton.setChecked(true);
             }
-            fiberLength = fiberLengthSharePre.getInt("fiberlength", 0);
-
-
+            fiberLength = systemSettingSharePre.getInt("fiberlength", 0);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 dataReceiveThread.setSuspend(true);
                 dataProcessThread.setSuspend(true);
-                preThreadPrecess();
+                preThreadProcess(transaction);
                 fragmentTransaction(transaction);
-                afterThreadPrecess();
+                afterThreadProcess();
                 transaction.commit();
-                setFragmentnumber();
+                setFragmentNumber();
                 dataReceiveThread.setSuspend(false);
                 dataProcessThread.setSuspend(false);
-
         }
-        abstract  void preThreadPrecess();
+        abstract  void preThreadProcess(FragmentTransaction transaction);
         abstract  void fragmentTransaction(FragmentTransaction transaction);
-        abstract  void afterThreadPrecess();
-        abstract  void setFragmentnumber();
-
+        abstract  void afterThreadProcess();
+        abstract  void setFragmentNumber();
    }
 
 

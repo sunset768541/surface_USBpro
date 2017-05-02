@@ -3,6 +3,8 @@ package com.example.datausb.Fiber;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.datausb.Main;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +44,8 @@ public class FiberManager {
     }
     public void removeFiber(String tunnelCode){
         try {
-
             getFiberMap().remove(tunnelCode);
             Log.e("从FM移除"," "+tunnelCode);
-
         }
         catch (Exception e){
             Log.e("删除Fiber异常","Fiber没有加入到FiberManger中");
@@ -91,7 +91,16 @@ public class FiberManager {
     public Context getContext() {
         return context;
     }
-
+    public void pushState(){
+        for (Map.Entry<String,Fiber>item: fiberMap.entrySet()){
+            item.getValue().pushClaLength();
+        }
+    }
+    public void popState(){
+        for (Map.Entry<String,Fiber>item: fiberMap.entrySet()){
+            item.getValue().popClaLegnth();
+        }
+    }
     public void setContext(Context context) {
         this.context = context;
     }

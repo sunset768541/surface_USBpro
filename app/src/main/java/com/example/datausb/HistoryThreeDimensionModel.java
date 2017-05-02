@@ -20,6 +20,9 @@ import java.util.Arrays;
 
 /**
  * Created by sunset on 16/3/3.
+ * 负责显示存储的温度数据，利用三维地图显示。
+ * 因为FiberManager管理着光纤实例，但是光纤实例又是单例模式产生的，因此当在历史记录
+ * 模式对各个光纤内的参数进行修改的后再回到原来的显示模式时
  */
 public class HistoryThreeDimensionModel extends android.app.Fragment {
     public MySurfaceView mv;
@@ -96,7 +99,6 @@ public class HistoryThreeDimensionModel extends android.app.Fragment {
 
     class threedimThread extends Thread {
 
-
         public void run() {
             /**
              * 这个sleep是为了解决当开启设备后，从其他模式切换到当前模式时，由于多线程操作，时访问mRender.lovo1.vCont时会出现空指针异常，这是因为
@@ -112,26 +114,25 @@ public class HistoryThreeDimensionModel extends android.app.Fragment {
                 seeekbar.setMax((int)DataRD.pureDataLength);
                 seeekbar.setProgress(0);
                 int readDataLength=0;
-                while (!DataRD.HAVE_READ_FINISEH) {
+                while (!DataRD.HAVE_READ_FINISEH) {//没有读取完成
                     long startTime = System.currentTimeMillis();
                     DataRD.SHOW_DATA_THREAT_FLAG=true;//标志读取一组数据的操作开始
                     try {
                         DataRD.dataInput.read(DataRD.dataBuffer);//这种读取方式十分快，1分钟数据20s读取完成
                         DataRD.dataInput.seek(DataRD.seek + DataRD.dataBuffer.length);
-
                     } catch (IOException e) {
                         Log.e("出现IO异常", "histhreeDim"+e.toString());
                     }
                     DataRD.decodeData();
                    // Log.e("histRT","解码完城");
-                    float[] TR = screenadapter(DataRD.fiberManager.getFiberMap().get("A").showcalculateTempreture(), mv.mRender.getcont() / 4);//选择A通道的温度进行显示
+                    float[] TR = screenadapter(DataRD.fiberManager.getFiberMap().get("A").showcalculateTempreture(), mv.mRenderer.getcont() / 4);//因为空间中目前只放入了一条光纤模型选择A通道的温度进行显示
                   //  Log.e("histRT","1");
-                    float[] colors = new float[mv.mRender.getcont()];//创建用于给光纤模型颜色渲染的数据
+                    float[] colors = new float[mv.mRenderer.getcont()];//创建用于给光纤模型颜色渲染的数据
                     //Log.e("histRT","2");
                     float[] cc = colorprocess(TR);
                     //Log.e("histRT","3");
                     colors = Arrays.copyOfRange(cc, 0, colors.length);
-                    mv.mRender.setcolor(colors);
+                    mv.mRenderer.setcolor(colors);
                     //Log.e("histRT","4");
                     DataRD.seek = DataRD.seek + DataRD.dataLength;
                     Log.e("读文件大小",Long.toString(DataRD.pureDataLength));

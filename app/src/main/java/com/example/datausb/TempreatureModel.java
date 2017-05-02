@@ -30,9 +30,7 @@ import java.util.Map;
 public class TempreatureModel extends android.app.Fragment {
     /**
      * 定义一个SurfaceHolder用来管理surface
-     */
-
-    /**
+     *
      * 这个函数的作用是使Activity可以唤醒fragment中的显示线程
      */
     public void wakeup() {
@@ -41,7 +39,6 @@ public class TempreatureModel extends android.app.Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.tempreaturemodel, container, false);
-
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -52,7 +49,6 @@ public class TempreatureModel extends android.app.Fragment {
             }
         } catch (Exception e) {
             Toast.makeText(getActivity().getApplicationContext(), "标定数据不存在，请先在标定模式下进行标定", Toast.LENGTH_SHORT).show();
-
         }
 
         /**
@@ -160,16 +156,12 @@ public class TempreatureModel extends android.app.Fragment {
                         List<Paint> linePaint = new ArrayList<>();//存画笔
 
                         for (Map.Entry<String, Fiber> item : ((Main) getActivity()).fiberManager.getFiberMap().entrySet()) {//遍历HashMap获得其中光纤的引用
-                            dataLine.add(item.getValue().showcalculateTempreture());//加入标定数据
+                            dataLine.add(item.getValue().showcalculateTempreture());//加入计算后的温度数据
                             linePaint.add(item.getValue().getCalibratePaint());//加入1663画笔绘制图线
                         }
-
                         Canvas c = holder.lockCanvas();
-
-
                         dataChart.drawAll(c, dataLine, linePaint);
                         // Log.e("温度模式","ok");
-
                         /**
                          * 结束锁定画布并显示
                          */

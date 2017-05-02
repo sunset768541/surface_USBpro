@@ -73,7 +73,7 @@
         </receiver>
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="x5Zdo2wwqnzWrThcwq6AtVhVDSKPcdde" />
+            android:value="chGXiZnYlsrD7Z3qxxqbAUfEdfVHGnba" />
     </application>
 
 </manifest>

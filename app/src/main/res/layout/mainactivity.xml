@@ -34,120 +34,125 @@
         android:paddingLeft="10dp"
         android:layout_marginBottom="0dp">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:background="@drawable/togglebuttoncolor">
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/togglebuttoncolor">
 
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton"
-                android:background="@drawable/dmbutton" />
+                <ImageButton
+                    android:id="@+id/imageButton"
+                    android:background="@drawable/dmbutton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="数据模式"
-                android:id="@+id/textView25"
-                android:layout_marginBottom="5dp"
-                android:textSize="10sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="数据模式"
+                    android:id="@+id/textView25"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="10sp" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/mapmodel"
-                android:background="@drawable/mapbuttn" />
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/mapmodel"
+                    android:background="@drawable/mapbuttn" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="地图模式"
-                android:id="@+id/textView55"
-                android:layout_marginBottom="5dp"
-                android:textSize="10sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="地图模式"
+                    android:id="@+id/textView55"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="10sp" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton2"
-                android:background="@drawable/clabutton" />
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageButton2"
+                    android:background="@drawable/clabutton" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="标定模式"
-                android:id="@+id/textView26"
-                android:layout_marginBottom="5dp"
-                android:textSize="10sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="标定模式"
+                    android:id="@+id/textView26"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="10sp" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton3"
-                android:background="@drawable/tembutton" />
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageButton3"
+                    android:background="@drawable/tembutton" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="温度模式"
-                android:id="@+id/textView27"
-                android:layout_marginBottom="5dp"
-                android:textSize="10sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="温度模式"
+                    android:id="@+id/textView27"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="10sp" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton4"
-                android:background="@drawable/thrbutton" />
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageButton4"
+                    android:background="@drawable/thrbutton" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="三维模式"
-                android:id="@+id/textView28"
-                android:layout_marginBottom="5dp"
-                android:textSize="10sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="三维模式"
+                    android:id="@+id/textView28"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="10sp" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton5"
-                android:background="@drawable/setbutton" />
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageButton5"
+                    android:background="@drawable/setbutton" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="系统设置"
-                android:id="@+id/textView29"
-                android:layout_marginBottom="5dp"
-                android:textSize="10sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="系统设置"
+                    android:id="@+id/textView29"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="10sp" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton6"
-                android:background="@drawable/hisbutton" />
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/imageButton6"
+                    android:background="@drawable/hisbutton" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="查看数据"
-                android:id="@+id/textView30"
-                android:textSize="10sp"
-                android:layout_marginBottom="5dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="查看数据"
+                    android:id="@+id/textView30"
+                    android:textSize="10sp"
+                    android:layout_marginBottom="5dp" />
 
-        </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -186,6 +191,15 @@
                 android:text="采样数据"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/loadmoedlstate"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="false"
+                android:layout_centerInParent="false"
+                android:textColor="#ffffff" />
 
             <ToggleButton
                 android:layout_width="wrap_content"

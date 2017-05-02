@@ -1,25 +1,22 @@
 package com.example.datausb;
 
-import android.app.Fragment;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
-import com.example.datausb.BaiduMap.map;
+import com.example.datausb.Fiber.FiberA;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +31,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created by sunset on 2016/12/23.
+ * 目前单通道
  */
 
 public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDrawFrameCallback {
@@ -43,31 +41,44 @@ public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDraw
     private FloatBuffer vertexBuffer;
     private FloatBuffer colorBuffer;
     MapStatus mapStatus;
+    float [] colors;
     public List<LatLng> pts = new ArrayList<>();
+    LatLng center;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.mapmodel, container, false);
     }
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);//
-        new Thread(new readLocation()).start();//加载坐标文件；
+        center=new LatLng(SystemParameter.centerLatitude,SystemParameter.centerLongitude);
+        Thread thread=new Thread(new ReadLatLng());//加载坐标文件；
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
+        thread.start();
         try {
-            Thread.sleep(800);
+            thread.join();
         }
-        catch (Exception e){}
+        catch (Exception e){
+            e.printStackTrace();
+        }
         mMapView = (MapView)getActivity().findViewById(R.id.view);
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
         mBaiduMap.setOnMapDrawFrameCallback(this);
-        final MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newLatLngZoom(new LatLng(38.978000183472237d,121.89835090371952d),15);
+        final MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newLatLngZoom(center,15);
+        mBaiduMap.animateMapStatus(mapStatusUpdate);//以动画的方式更新地图，可以用来主动的刷新地图，当计算完颜色数据后，通过这个来刷新地图
+        //启动MapRenderThread线程
+    }
+    public void refreshMap(){//调用这个方法实现地图的从新绘制
+        MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newLatLngZoom(center,15);
         mBaiduMap.animateMapStatus(mapStatusUpdate);
     }
-    public void onMapDrawFrame(GL10 gl, MapStatus drawingMapStatus) {
+    public void onMapDrawFrame(GL10 gl, MapStatus drawingMapStatus) {//当地图状态改变的时候调用，当颜色数据处理好了后通过对地图状态做出改变刷新
         if (mBaiduMap.getProjection() != null) {
             calPolylinePoint(drawingMapStatus);
-            drawPolyline(gl, vertexBuffer, 15, 4096);
+            drawPolyline(gl, vertexBuffer, 5, 4096);
         }
+      //  Log.e("onMapdrawo","地图模式");
     }
     public void calPolylinePoint(MapStatus mspStatus) {
         PointF[] polyPoints = new PointF[pts.size()];
@@ -85,7 +96,7 @@ public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDraw
         getCO();
     }
     private void getCO(){
-        float [] colors=colorProcess(testColor());
+        colors=colorProcess(testColor());//产生颜色数据，testColor为测试用。
         ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * 4);
         cbb.order(ByteOrder.nativeOrder());
         colorBuffer = cbb.asFloatBuffer();
@@ -119,11 +130,14 @@ public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDraw
         gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
     }
-    class readLocation implements Runnable{
+    class ReadLatLng implements Runnable{
         @Override
         public void run() {
             try {
-                InputStream in=getActivity().getAssets().open("locationdata.txt");//fname is the location file name
+                InputStream in;
+                if (SystemParameter.axipath==null)
+                 in=getActivity().getAssets().open("locationdata.txt");//fname is the location file name
+                else in= new FileInputStream(SystemParameter.axipath);
                 InputStreamReader isr=new InputStreamReader(in);
                 BufferedReader br=new BufferedReader(isr);
                 String temps=null;
@@ -135,6 +149,7 @@ public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDraw
                     pts.add(new LatLng(Double.parseDouble(tempsa[0]),Double.parseDouble(tempsa[1])));
                     t++;
                 }
+                in.close();
                 Log.e("读取位置数据文件","完成,共读取"+Integer.valueOf(t).toString()+"个位置坐标");
             }
             catch (IOException e){
@@ -198,5 +213,34 @@ public class MapModel extends android.app.Fragment implements BaiduMap.OnMapDraw
             j = j + 4;
         }
         return color;
+    }
+    class MapRendderThread extends Thread {
+        public void run() {
+            try {//捕获线程运行中切换界面而产生的的空指针异常，防止程序崩溃。
+                while (!((Main) getActivity()).stopMapModelThread) {
+                    synchronized (((Main) getActivity()).dataObj) {//所有的等待和唤醒的锁都是同一个，这里选用了Activity中的一个对对象
+                        /**
+                         * 如果当标志位为false这个线程开始等待
+                         */
+                        if (!((Main) getActivity()).dataObj.flag1)
+                            try {
+                                ((Main) getActivity()).dataObj.wait();
+                            } catch (InterruptedException ex) {
+                                Log.e("地图模式",Log.getStackTraceString(ex));
+                            }
+                        else {
+                            ((Main) getActivity()).dataObj.notifyAll();
+                        }
+                         colors = colorProcess(FiberA.createFiberA().calculateTempreture());//获取通道A的数据
+                         refreshMap();
+                        ((Main) getActivity()).dataObj.flag1 = false;
+                        ((Main) getActivity()).wakeUpAllMainThread();
+
+                    }
+                }
+            } catch (NullPointerException e) {
+                Log.d("MapModel", Log.getStackTraceString(e));
+            }
+        }
     }
 }

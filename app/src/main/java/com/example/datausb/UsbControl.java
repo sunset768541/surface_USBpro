@@ -69,7 +69,7 @@ public class UsbControl{
 
         return isSend;//flag标记是否发送成功，成功flag>1,不成功-1
     }
-    public byte[] receivceDataFromUsb(int receiveDataLength){
+    public byte[] receiveDataFromUsb(int receiveDataLength){
         if (Receivebytes==null){
            Receivebytes=new byte[receiveDataLength];
         }
